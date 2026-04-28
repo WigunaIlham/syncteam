@@ -89,124 +89,169 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
-      {/* Onboarding banner untuk user baru */}
-      {isSetup && (
-        <div
-          className="rounded-xl p-4 mb-6 flex items-start gap-3"
-          style={{
-            background: "var(--c-accent-bg)",
-            border: "1px solid var(--c-accent-bd)",
-          }}
-        >
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="shrink-0 mt-0.5" style={{ color: "var(--c-accent)" }}>
-            <path d="M10 2l1.8 5.5H17l-4.6 3.3 1.8 5.5L10 13l-4.2 3.3 1.8-5.5L3 7.5h5.2z" fill="currentColor"/>
-          </svg>
-          <div>
-            <p className="font-bold text-sm" style={{ color: "var(--c-accent)" }}>
-              Selamat datang di SyncTeam, {profile.full_name}!
-            </p>
-            <p className="text-xs mt-0.5" style={{ color: "var(--c-muted)" }}>
-              Lengkapi profil kamu agar AI dapat membuat rekomendasi yang akurat untuk tim.
-            </p>
-          </div>
-        </div>
-      )}
+    <div
+  style={{
+  width: "100%",
+  padding: "40px",
+  display: "flex",
+  flexDirection: "column",
+  gap: "24px",
+}}
+>
+  {/* Onboarding banner untuk user baru */}
+  {isSetup && (
+    <div
+      className="rounded-xl flex items-start"
+      style={{
+        padding: "16px",
+        gap: "12px",
+        background: "var(--c-accent-bg)",
+        border: "1px solid var(--c-accent-bd)",
+      }}
+    >
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        className="shrink-0"
+        style={{ color: "var(--c-accent)", marginTop: "2px" }}
+      >
+        <path d="M10 2l1.8 5.5H17l-4.6 3.3 1.8 5.5L10 13l-4.2 3.3 1.8-5.5L3 7.5h5.2z" fill="currentColor" />
+      </svg>
 
-      <div className="flex items-center justify-between mb-2">
-        <h1 className="text-2xl font-bold" style={{ color: "var(--c-text)" }}>
-          {isSetup ? "Setup Profil" : profile.full_name}
-        </h1>
-        {!isSetup && (
-          <span className="text-sm font-bold" style={{ color: "var(--c-accent)" }}>
-            {profile.xp_points} XP
-          </span>
-        )}
-      </div>
-      {!isSetup && (
-        <p className="text-sm mb-8" style={{ color: "var(--c-muted)" }}>
-          Update role, skill, dan ketersediaan jam kerja kamu.
+      <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+        <p className="font-bold text-sm" style={{ color: "var(--c-accent)" }}>
+          Selamat datang di SyncTeam, {profile.full_name}!
         </p>
-      )}
-
-      {message && (
-        <div
-          className="mb-6 p-3 rounded-lg text-sm border"
-          style={{
-            background: message.type === "success" ? "var(--c-green-bg)" : "var(--c-red-bg)",
-            borderColor: message.type === "success" ? "var(--c-green)" : "var(--c-danger)",
-            color: message.type === "success" ? "var(--c-green)" : "var(--c-danger)",
-          }}
-        >
-          {message.text}
-        </div>
-      )}
-
-      <div className="space-y-6">
-        <Input
-          label="Role / Jabatan"
-          placeholder="Contoh: Front-end Engineer, Backend Developer, UI/UX Designer"
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-          required
-        />
-
-        <div>
-          <p className="text-xs font-bold mb-2 uppercase tracking-wider" style={{ color: "var(--c-muted)" }}>
-            Skills{" "}
-            <span style={{ color: "var(--c-accent)" }}>
-              ({skills.length} dipilih)
-            </span>
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {SKILL_OPTIONS.map((skill) => (
-              <button
-                key={skill}
-                onClick={() => toggleSkill(skill)}
-                className="px-3 py-1.5 rounded-full text-xs font-medium border transition-all"
-                style={
-                  skills.includes(skill)
-                    ? {
-                        background: "var(--c-accent-bg)",
-                        borderColor: "var(--c-accent)",
-                        color: "var(--c-accent)",
-                      }
-                    : {
-                        background: "var(--c-raised)",
-                        borderColor: "var(--c-border)",
-                        color: "var(--c-muted)",
-                      }
-                }
-              >
-                {skill}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-xs font-bold mb-2 uppercase tracking-wider" style={{ color: "var(--c-muted)" }}>
-            Jam Tersedia / Minggu:{" "}
-            <span style={{ color: "var(--c-accent)" }}>{availableHours} jam</span>
-          </label>
-          <input
-            type="range"
-            min={1}
-            max={40}
-            value={availableHours}
-            onChange={(e) => setAvailableHours(Number(e.target.value))}
-            className="w-full accent-[var(--c-accent)]"
-          />
-          <div className="flex justify-between text-[10px] mt-1" style={{ color: "var(--c-muted)" }}>
-            <span>1 jam</span>
-            <span>40 jam</span>
-          </div>
-        </div>
-
-        <Button onClick={handleSave} loading={isSaving} className="w-full">
-          {isSetup ? "Simpan & Mulai →" : "Simpan Profil"}
-        </Button>
+        <p className="text-xs" style={{ color: "var(--c-muted)" }}>
+          Lengkapi profil kamu agar AI dapat membuat rekomendasi yang akurat untuk tim.
+        </p>
       </div>
     </div>
+  )}
+
+  {/* Header */}
+  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+    <div className="flex items-center justify-between">
+      <h1 className="text-3xl font-bold" style={{ color: "var(--c-text)" }}>
+        {isSetup ? "Setup Profil" : profile.full_name}
+      </h1>
+
+      {!isSetup && (
+        <span className="text-sm font-bold" style={{ color: "var(--c-accent)" }}>
+          {profile.xp_points} XP
+        </span>
+      )}
+    </div>
+
+    {!isSetup && (
+      <p className="text-sm" style={{ color: "var(--c-muted)" }}>
+        Update role, skill, dan ketersediaan jam kerja kamu.
+      </p>
+    )}
+  </div>
+
+  {/* Alert */}
+  {message && (
+    <div
+      className="rounded-lg text-sm border"
+      style={{
+        padding: "12px",
+        background: message.type === "success" ? "var(--c-green-bg)" : "var(--c-red-bg)",
+        borderColor: message.type === "success" ? "var(--c-green)" : "var(--c-danger)",
+        color: message.type === "success" ? "var(--c-green)" : "var(--c-danger)",
+      }}
+    >
+      {message.text}
+    </div>
+  )}
+
+  {/* Form */}
+  <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+    <Input
+      label="Role / Jabatan"
+      placeholder="Contoh: Front-end Engineer, Backend Developer, UI/UX Designer"
+      value={role}
+      onChange={(e) => setRole(e.target.value)}
+      required
+    />
+
+    {/* Skills */}
+    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+      <p className="text-xs font-bold uppercase tracking-wider" style={{ color: "var(--c-muted)" }}>
+        Skills{" "}
+        <span style={{ color: "var(--c-accent)" }}>
+          ({skills.length} dipilih)
+        </span>
+      </p>
+
+      <div className="flex flex-wrap gap-2">
+        {SKILL_OPTIONS.map((skill) => (
+          <button
+            key={skill}
+            onClick={() => toggleSkill(skill)}
+            className="rounded-full text-xs font-medium border transition-all"
+            style={
+              skills.includes(skill)
+                ? {
+                    padding: "6px 12px",
+                    background: "var(--c-accent-bg)",
+                    borderColor: "var(--c-accent)",
+                    color: "var(--c-accent)",
+                  }
+                : {
+                    padding: "6px 12px",
+                    background: "var(--c-raised)",
+                    borderColor: "var(--c-border)",
+                    color: "var(--c-muted)",
+                  }
+            }
+          >
+            {skill}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    {/* Available Hours */}
+    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+      <label className="block text-xs font-bold uppercase tracking-wider" style={{ color: "var(--c-muted)" }}>
+        Jam Tersedia / Minggu:{" "}
+        <span style={{ color: "var(--c-accent)" }}>{availableHours} jam</span>
+      </label>
+
+      <input
+        type="range"
+        min={1}
+        max={40}
+        value={availableHours}
+        onChange={(e) => setAvailableHours(Number(e.target.value))}
+        className="w-full accent-[var(--c-accent)]"
+      />
+
+      <div className="flex justify-between text-[10px]" style={{ color: "var(--c-muted)" }}>
+        <span>1 jam</span>
+        <span>40 jam</span>
+      </div>
+    </div>
+
+    <Button
+  onClick={handleSave}
+  loading={isSaving}
+  className="w-full"
+  style={{
+    padding: "10px 14px",
+    fontSize: "16px",
+    fontWeight: 700,
+    lineHeight: 1,
+    borderRadius: "24px",
+    color: "#ffffff",
+  }}
+>
+  {isSetup ? "Simpan & Mulai →" : "Simpan Profil"}
+</Button>
+  </div>
+</div>
   );
 }

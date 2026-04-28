@@ -154,3 +154,8 @@ body {
   border-color: var(--c-accent) !important;
   box-shadow: 0 0 0 3px var(--c-accent-bg);
 }
+
+.tabnav-link:hover {
+  background: var(--c-raised) !important;
+  color: var(--c-text) !important;
+}

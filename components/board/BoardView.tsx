@@ -123,6 +123,12 @@ function AddTaskForm({
   );
 }
 
+const COLUMN_DOT: Record<string, string> = {
+  in_progress: "var(--c-amber)",
+  completed: "var(--c-green)",
+  backlog: "var(--c-faint)",
+};
+
 export default function BoardView({ projectId, initialTasks }: BoardViewProps) {
   const { tasks, setTasks, byStatus } = useRealtimeTasks(projectId, initialTasks);
   const supabase = createClient();
@@ -149,99 +155,164 @@ export default function BoardView({ projectId, initialTasks }: BoardViewProps) {
     setAddingToColumn(null);
   };
 
-  // suppress unused warning — tasks is used by byStatus via useRealtimeTasks
   void tasks;
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
-      <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex-1 overflow-x-auto p-6">
-          <div className="flex gap-4 h-full min-w-max">
-            {columns.map(({ id, variant }) => {
-              const colTasks = byStatus[id];
-              return (
-                <div
-                  key={id}
-                  className="w-80 flex-shrink-0 flex flex-col rounded-2xl p-4 overflow-hidden h-full"
-                  style={{
-                    background: "color-mix(in srgb, var(--c-surface) 60%, transparent)",
-                    border: "1px solid var(--c-border)",
-                  }}
-                >
-                  <div className="flex items-center justify-between mb-4 shrink-0">
-                    <h2
-                      className="text-xs font-bold uppercase tracking-wider"
-                      style={{ color: "var(--c-text)" }}
-                    >
-                      {STATUS_LABELS[id]}
-                    </h2>
-                    <Badge variant={variant}>{colTasks.length}</Badge>
-                  </div>
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+  <DragDropContext onDragEnd={onDragEnd}>
+    <div
+      style={{
+        flex: 1,
+        overflowX: "auto",
+        padding: "24px",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          gap: "16px",
+          height: "100%",
+          minWidth: "max-content",
+        }}
+      >
+        {columns.map(({ id, variant }) => {
+          const colTasks = byStatus[id];
 
-                  <Droppable droppableId={id}>
-                    {(provided, snapshot) => (
-                      <div
-                        {...provided.droppableProps}
-                        ref={provided.innerRef}
-                        className="flex-1 overflow-y-auto pr-1 pb-2 transition-colors rounded-lg"
-                        style={{
-                          background: snapshot.isDraggingOver
-                            ? "color-mix(in srgb, var(--c-accent) 5%, transparent)"
-                            : "transparent",
-                        }}
-                      >
-                        {colTasks.length === 0 && !snapshot.isDraggingOver && addingToColumn !== id && (
-                          <div
-                            className="h-24 flex items-center justify-center text-xs border-2 border-dashed rounded-lg"
-                            style={{ color: "var(--c-faint)", borderColor: "var(--c-border)" }}
-                          >
-                            Kosong
-                          </div>
-                        )}
-                        {colTasks.map((task: Task, index: number) => (
-                          <TaskCard key={task.id} task={task} index={index} />
-                        ))}
-                        {provided.placeholder}
-                      </div>
-                    )}
-                  </Droppable>
-
-                  {/* Add Task area */}
-                  <div className="shrink-0 pt-2" style={{ borderTop: "1px solid var(--c-border)" }}>
-                    {addingToColumn === id ? (
-                      <AddTaskForm
-                        status={id}
-                        projectId={projectId}
-                        onAdd={handleTaskAdded}
-                        onCancel={() => setAddingToColumn(null)}
-                      />
-                    ) : (
-                      <button
-                        onClick={() => setAddingToColumn(id)}
-                        className="w-full flex items-center gap-1.5 text-xs py-2 px-1 rounded-lg transition-all"
-                        style={{ color: "var(--c-muted)" }}
-                        onMouseEnter={(e) => {
-                          (e.currentTarget as HTMLElement).style.color = "var(--c-accent)";
-                          (e.currentTarget as HTMLElement).style.background = "var(--c-accent-bg)";
-                        }}
-                        onMouseLeave={(e) => {
-                          (e.currentTarget as HTMLElement).style.color = "var(--c-muted)";
-                          (e.currentTarget as HTMLElement).style.background = "transparent";
-                        }}
-                      >
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                          <path d="M6 1v10M1 6h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                        </svg>
-                        Tambah task
-                      </button>
-                    )}
-                  </div>
+          return (
+            <div
+              key={id}
+              style={{
+                width: "320px",
+                flexShrink: 0,
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+                borderRadius: "18px",
+                background: "color-mix(in srgb, var(--c-surface) 60%, transparent)",
+                border: "1px solid var(--c-border)",
+              }}
+            >
+              {/* Column header */}
+              <div
+                className="flex items-center justify-between shrink-0"
+                style={{
+                  padding: "14px 16px",
+                  borderBottom: "1px solid var(--c-border)",
+                }}
+              >
+                <div className="flex items-center gap-2">
+                  <span
+                    style={{
+                      width: "6px",
+                      height: "6px",
+                      borderRadius: "999px",
+                      flexShrink: 0,
+                      background: COLUMN_DOT[id],
+                    }}
+                  />
+                  <h2
+                    className="text-[11px] font-bold uppercase tracking-widest"
+                    style={{ color: "var(--c-muted)" }}
+                  >
+                    {STATUS_LABELS[id]}
+                  </h2>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      </DragDropContext>
+
+                <Badge variant={variant}>{colTasks.length}</Badge>
+              </div>
+
+              {/* Droppable area */}
+              <Droppable droppableId={id}>
+                {(provided, snapshot) => (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    style={{
+                      flex: 1,
+                      overflowY: "auto",
+                      padding: "12px",
+                      transition: "background 0.15s ease",
+                      background: snapshot.isDraggingOver
+                        ? "color-mix(in srgb, var(--c-accent) 5%, transparent)"
+                        : "transparent",
+                    }}
+                  >
+                    {colTasks.length === 0 &&
+                      !snapshot.isDraggingOver &&
+                      addingToColumn !== id && (
+                        <div
+                          className="flex flex-col items-center justify-center text-xs border-2 border-dashed rounded-xl"
+                          style={{
+                            height: "96px",
+                            gap: "6px",
+                            color: "var(--c-faint)",
+                            borderColor: "var(--c-border)",
+                          }}
+                        >
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" opacity="0.4">
+                            <rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2" />
+                            <path d="M8 5v6M5 8h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+                          </svg>
+                          <span>Kosong</span>
+                        </div>
+                      )}
+
+                    {colTasks.map((task: Task, index: number) => (
+                      <TaskCard key={task.id} task={task} index={index} />
+                    ))}
+
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+
+              {/* Add Task area */}
+              <div
+                style={{
+                  flexShrink: 0,
+                  padding: "10px 12px",
+                  borderTop: "1px solid var(--c-border)",
+                }}
+              >
+                {addingToColumn === id ? (
+                  <AddTaskForm
+                    status={id}
+                    projectId={projectId}
+                    onAdd={handleTaskAdded}
+                    onCancel={() => setAddingToColumn(null)}
+                  />
+                ) : (
+                  <button
+                    onClick={() => setAddingToColumn(id)}
+                    className="w-full flex items-center text-xs rounded-lg transition-all"
+                    style={{
+                      gap: "6px",
+                      padding: "10px 10px",
+                      color: "var(--c-muted)",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLElement).style.color = "var(--c-accent)";
+                      (e.currentTarget as HTMLElement).style.background = "var(--c-accent-bg)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.color = "var(--c-muted)";
+                      (e.currentTarget as HTMLElement).style.background = "transparent";
+                    }}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                      <path d="M6 1v10M1 6h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                    Tambah task
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
+  </DragDropContext>
+</div>
   );
 }

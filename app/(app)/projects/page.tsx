@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { formatDate } from "@/lib/utils/date";
+import { HoverRow } from "@/components/ui/HoverRow";
 
 export default async function ProjectsPage() {
   const supabase = await createClient();
@@ -45,39 +46,87 @@ export default async function ProjectsPage() {
   };
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
+    <div
+      style={{
+        width: "100%",
+        padding: "40px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "24px",
+      }}
+    >
+      {/* ── Header ── */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "24px",
+        }}
+      >
         <div>
-          <h1 className="text-2xl font-semibold" style={{ color: "var(--c-text)" }}>
+          <h1
+            className="text-3xl font-bold tracking-tight"
+            style={{ color: "var(--c-text)" }}
+          >
             Semua Proyek
           </h1>
-          <p className="text-sm mt-0.5" style={{ color: "var(--c-muted)" }}>
+          <p
+            className="text-sm"
+            style={{
+              color: "var(--c-muted)",
+              marginTop: "4px",
+            }}
+          >
             {allProjects.length} proyek
           </p>
         </div>
+
         <Link
           href="/projects/new"
-          className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all"
-          style={{ background: "var(--c-accent)", color: "#000" }}
+          className="flex items-center gap-2 text-sm font-semibold rounded-xl transition-all"
+          style={{
+            padding: "10px 16px",
+            background: "var(--c-accent)",
+            color: "#000",
+          }}
         >
           <svg width="13" height="13" viewBox="0 0 12 12" fill="none">
-            <path d="M6 1v10M1 6h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            <path
+              d="M6 1v10M1 6h10"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
           </svg>
           Buat Proyek
         </Link>
       </div>
 
+      {/* ── Content ── */}
       {allProjects.length === 0 ? (
         <div
-          className="rounded-xl p-12 text-center"
-          style={{ background: "var(--c-surface)", border: "1px dashed var(--c-border)" }}
+          style={{
+            padding: "56px",
+            textAlign: "center",
+            borderRadius: "20px",
+            background: "var(--c-surface)",
+            border: "1px dashed var(--c-border)",
+          }}
         >
-          <p className="text-sm mb-3" style={{ color: "var(--c-muted)" }}>
+          <p
+            className="text-sm"
+            style={{
+              color: "var(--c-muted)",
+              marginBottom: "12px",
+            }}
+          >
             Belum ada proyek.
           </p>
+
           <Link
             href="/projects/new"
-            className="text-sm font-medium hover:underline"
+            className="text-sm font-semibold hover:underline"
             style={{ color: "var(--c-accent)" }}
           >
             Buat proyek pertama Anda →
@@ -85,61 +134,117 @@ export default async function ProjectsPage() {
         </div>
       ) : (
         <div
-          className="rounded-xl overflow-hidden"
-          style={{ background: "var(--c-surface)", border: "1px solid var(--c-border)" }}
+          style={{
+            overflow: "hidden",
+            borderRadius: "20px",
+            background: "var(--c-surface)",
+            border: "1px solid var(--c-border)",
+          }}
         >
           {allProjects.map((p, i) => (
             <Link key={p.id} href={`/projects/${p.id}/board`}>
-              <div
-                className="flex items-center gap-4 px-5 py-4 transition-all card-hover cursor-pointer"
+              <HoverRow
+                isLast={i === allProjects.length - 1}
                 style={{
-                  borderBottom: i < allProjects.length - 1 ? "1px solid var(--c-border)" : "none",
+                  padding: "18px 20px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "16px",
+                  cursor: "pointer",
                 }}
-                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "var(--c-raised)")}
-                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "transparent")}
               >
-                {/* Status dot */}
+                {/* Status Dot */}
                 <span
-                  className="w-2 h-2 rounded-full shrink-0"
-                  style={{ background: STATUS_COLOR[p.status] ?? "var(--c-muted)" }}
+                  style={{
+                    width: "8px",
+                    height: "8px",
+                    flexShrink: 0,
+                    borderRadius: "999px",
+                    background: STATUS_COLOR[p.status] ?? "var(--c-muted)",
+                  }}
                 />
 
-                {/* Name + description */}
-                <div className="flex-1 min-w-0">
+                {/* Name + Description */}
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium truncate" style={{ color: "var(--c-text)" }}>
+                    <span
+                      className="text-sm font-semibold truncate"
+                      style={{ color: "var(--c-text)" }}
+                    >
                       {p.name}
                     </span>
+
                     {p.isOwner && (
                       <span
-                        className="text-[9px] px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider shrink-0"
-                        style={{ background: "var(--c-accent-bg)", color: "var(--c-accent)", border: "1px solid var(--c-accent-bd)" }}
+                        className="text-[9px] font-bold uppercase tracking-wider shrink-0 rounded"
+                        style={{
+                          padding: "2px 6px",
+                          color: "var(--c-accent)",
+                          background: "var(--c-accent-bg)",
+                          border: "1px solid var(--c-accent-bd)",
+                        }}
                       >
                         Owner
                       </span>
                     )}
                   </div>
+
                   {p.description && (
-                    <p className="text-xs truncate mt-0.5" style={{ color: "var(--c-muted)" }}>
+                    <p
+                      className="text-xs truncate"
+                      style={{
+                        color: "var(--c-muted)",
+                        marginTop: "4px",
+                      }}
+                    >
                       {p.description}
                     </p>
                   )}
                 </div>
 
-                {/* Dates + status */}
-                <div className="text-right shrink-0 hidden sm:block">
+                {/* Dates + Status */}
+                <div
+                  className="hidden sm:block"
+                  style={{
+                    textAlign: "right",
+                    flexShrink: 0,
+                  }}
+                >
                   <p className="text-xs" style={{ color: "var(--c-muted)" }}>
                     {formatDate(p.start_date)} — {formatDate(p.end_date)}
                   </p>
-                  <p className="text-[10px] mt-0.5" style={{ color: STATUS_COLOR[p.status] ?? "var(--c-muted)" }}>
+
+                  <p
+                    className="text-[10px]"
+                    style={{
+                      marginTop: "4px",
+                      color: STATUS_COLOR[p.status] ?? "var(--c-muted)",
+                    }}
+                  >
                     {STATUS_LABEL[p.status] ?? p.status}
                   </p>
                 </div>
 
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ color: "var(--c-faint)", flexShrink: 0 }}>
-                  <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                {/* Arrow */}
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  style={{
+                    flexShrink: 0,
+                    color: "var(--c-faint)",
+                  }}
+                >
+                  <path
+                    d="M5 3l4 4-4 4"
+                    stroke="currentColor"
+                    strokeWidth="1.3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
-              </div>
+              </HoverRow>
             </Link>
           ))}
         </div>

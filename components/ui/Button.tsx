@@ -18,12 +18,12 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const base =
-    "inline-flex items-center justify-center gap-2 font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed rounded-lg select-none";
+    "inline-flex items-center justify-center gap-2 font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed rounded-xl select-none";
 
   const sizes: Record<string, string> = {
-    sm: "px-3 py-1.5 text-xs",
-    md: "px-4 py-2 text-sm",
-    lg: "px-5 py-2.5 text-sm",
+    sm: "px-6 py-4 text-xs",
+    md: "px-6 py-3.5 text-sm",
+    lg: "px-8 py-4 text-sm",
   };
 
   const variantStyle: Record<string, React.CSSProperties> = {
@@ -33,7 +33,7 @@ export default function Button({
       border: "1px solid transparent",
     },
     secondary: {
-      background: "var(--c-raised)",
+      background: "var(--c-surface)",
       color: "var(--c-text)",
       border: "1px solid var(--c-border)",
     },

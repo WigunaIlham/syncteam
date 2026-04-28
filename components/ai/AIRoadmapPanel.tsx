@@ -28,56 +28,82 @@ export default function AIRoadmapPanel({ projectId }: { projectId: string }) {
   };
 
   return (
-    <div className="flex flex-col items-end gap-2">
-      {error && (
-        <div
-          className="flex items-start gap-2 text-xs rounded-lg px-3 py-2 max-w-xs text-right"
-          style={{
-            color: "var(--c-danger)",
-            background: "var(--c-red-bg)",
-            border: "1px solid color-mix(in srgb, var(--c-danger) 20%, transparent)",
-          }}
-        >
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="shrink-0 mt-0.5">
-            <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.2"/>
-            <path d="M6 4v2.5M6 8v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-          </svg>
-          {error}
-        </div>
-      )}
-      <button
-        onClick={handleGenerate}
-        disabled={isLoading}
-        className="flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-        style={{
-          background: "var(--c-accent-bg)",
-          border: "1px solid var(--c-accent-bd)",
-          color: "var(--c-accent)",
-        }}
-        onMouseEnter={(e) => {
-          if (!isLoading) (e.currentTarget as HTMLElement).style.background = "color-mix(in srgb, var(--c-accent) 20%, transparent)";
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLElement).style.background = "var(--c-accent-bg)";
-        }}
-      >
-        {isLoading ? (
-          <>
-            <span
-              className="w-3 h-3 border-2 rounded-full animate-spin"
-              style={{ borderColor: "var(--c-accent-bd)", borderTopColor: "var(--c-accent)" }}
-            />
-            Generating Roadmap...
-          </>
-        ) : (
-          <>
-            <svg width="10" height="10" viewBox="0 0 8 8" fill="currentColor">
-              <path d="M4 0l.9 2.7H8L5.5 4.4l.9 2.7L4 5.5 1.6 7.1l.9-2.7L0 2.7h3.1z"/>
-            </svg>
-            Generate AI Roadmap
-          </>
-        )}
-      </button>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "8px" }}>
+  {error && (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "flex-start",
+        gap: "6px",
+        fontSize: "11px",
+        borderRadius: "8px",
+        padding: "8px 12px",
+        maxWidth: "240px",
+        textAlign: "right",
+        color: "var(--c-danger)",
+        background: "var(--c-red-bg)",
+        border: "1px solid color-mix(in srgb, var(--c-danger) 20%, transparent)",
+      }}
+    >
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0, marginTop: "1px" }}>
+        <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.2"/>
+        <path d="M6 4v2.5M6 8v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      </svg>
+      {error}
     </div>
+  )}
+  <button
+    onClick={handleGenerate}
+    disabled={isLoading}
+    style={{
+      display: "flex",
+      alignItems: "center",
+      gap: "7px",
+      padding: "8px 14px",
+      fontSize: "12px",
+      fontWeight: 700,
+      borderRadius: "8px",
+      background: "var(--c-accent-bg)",
+      border: "1px solid var(--c-accent-bd)",
+      color: "var(--c-accent)",
+      cursor: isLoading ? "not-allowed" : "pointer",
+      opacity: isLoading ? 0.4 : 1,
+      letterSpacing: "0.01em",
+      transition: "background 0.15s, opacity 0.15s",
+    }}
+    onMouseEnter={(e) => {
+      if (!isLoading)
+        (e.currentTarget as HTMLElement).style.background =
+          "color-mix(in srgb, var(--c-accent) 20%, transparent)";
+    }}
+    onMouseLeave={(e) => {
+      (e.currentTarget as HTMLElement).style.background = "var(--c-accent-bg)";
+    }}
+  >
+    {isLoading ? (
+      <>
+        <span
+          style={{
+            width: "11px",
+            height: "11px",
+            border: "2px solid var(--c-accent-bd)",
+            borderTopColor: "var(--c-accent)",
+            borderRadius: "50%",
+            display: "inline-block",
+            animation: "spin 0.7s linear infinite",
+          }}
+        />
+        Generating Roadmap...
+      </>
+    ) : (
+      <>
+        <svg width="10" height="10" viewBox="0 0 8 8" fill="currentColor">
+          <path d="M4 0l.9 2.7H8L5.5 4.4l.9 2.7L4 5.5 1.6 7.1l.9-2.7L0 2.7h3.1z"/>
+        </svg>
+        Generate AI Roadmap
+      </>
+    )}
+  </button>
+</div>
   );
 }

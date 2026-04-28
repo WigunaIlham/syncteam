@@ -32,114 +32,284 @@ export default async function MembersPage({ params }: { params: Promise<{ id: st
     .sort((a, b) => (b.profile?.xp_points ?? 0) - (a.profile?.xp_points ?? 0));
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-base font-semibold" style={{ color: "var(--c-text)" }}>
-            Anggota Tim
-          </h2>
-          <p className="text-xs mt-0.5" style={{ color: "var(--c-muted)" }}>
-            {members.length} anggota · diurutkan berdasarkan XP
-          </p>
-        </div>
-        {isOwner && <InviteMemberModal projectId={id} />}
-      </div>
-
-      {/* Table */}
-      <div
-        className="rounded-xl overflow-hidden"
-        style={{ background: "var(--c-surface)", border: "1px solid var(--c-border)" }}
+    <div
+  className="mx-auto"
+  style={{
+    maxWidth: "1200px",
+    padding: "40px 32px 56px",
+  }}
+>
+  {/* Header */}
+  <div
+    className="flex items-center justify-between"
+    style={{
+      marginBottom: "24px",
+      paddingBottom: "14px",
+      borderBottom: "1px solid var(--c-border)",
+    }}
+  >
+    <div>
+      <h2
+        className="font-semibold"
+        style={{
+          color: "var(--c-text)",
+          fontSize: "22px",
+          lineHeight: 1.2,
+          marginBottom: "10px",
+        }}
       >
-        {members.length === 0 ? (
-          <div className="py-12 text-center">
-            <p className="text-sm" style={{ color: "var(--c-muted)" }}>
-              Belum ada anggota tim.
-            </p>
-          </div>
-        ) : (
-          members.map((m, index) => {
-            const profile = m.profile;
-            if (!profile) return null;
-            const initials = profile.full_name
-              .split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase();
+        Anggota Tim
+      </h2>
 
-            return (
+      <p
+        style={{
+          color: "var(--c-muted)",
+          fontSize: "14px",
+          marginBottom: 4,
+        
+        }}
+      >
+        {members.length} anggota · diurutkan berdasarkan XP
+      </p>
+    </div>
+
+    {isOwner && (
+  <div
+    style={{
+      marginLeft: "28px",
+      paddingLeft: "12px",
+      flexShrink: 0,
+      minWidth: "fit-content",
+    }}
+  >
+    <InviteMemberModal projectId={id} />
+  </div>
+)}
+  </div>
+
+  {/* Members Card */}
+  <div
+    style={{
+      background: "var(--c-surface)",
+      border: "1px solid var(--c-border)",
+      borderRadius: "20px",
+      overflow: "hidden",
+      boxShadow: "0 4px 18px rgba(0,0,0,.03)",
+    }}
+  >
+    {members.length === 0 ? (
+      <div
+        style={{
+          padding: "72px 24px",
+          textAlign: "center",
+        }}
+      >
+        <p
+          style={{
+            color: "var(--c-muted)",
+            fontSize: "14px",
+            margin: 0,
+          }}
+        >
+          Belum ada anggota tim.
+        </p>
+      </div>
+    ) : (
+      members.map((m, index) => {
+        const profile = m.profile;
+        if (!profile) return null;
+
+        const initials = profile.full_name
+          .split(" ")
+          .map((n) => n[0])
+          .slice(0, 2)
+          .join("")
+          .toUpperCase();
+
+        return (
+          <div
+            key={m.id}
+            className="flex items-center"
+            style={{
+              gap: "18px",
+              padding: "22px 26px",
+              borderBottom:
+                index < members.length - 1
+                  ? "1px solid var(--c-border)"
+                  : "none",
+              transition: "all .2s ease",
+            }}
+          >
+            {/* Rank */}
+            <div
+              style={{
+                width: "32px",
+                flexShrink: 0,
+                textAlign: "center",
+                fontSize: "12px",
+                fontWeight: 600,
+                color: "var(--c-faint)",
+              }}
+            >
+              #{index + 1}
+            </div>
+
+            {/* Avatar */}
+            <div
+              className="flex items-center justify-center"
+              style={{
+                width: "42px",
+                height: "42px",
+                borderRadius: "50%",
+                flexShrink: 0,
+                fontSize: "13px",
+                fontWeight: 700,
+                background: "var(--c-accent-bg)",
+                color: "var(--c-accent)",
+                border: "1px solid var(--c-accent-bd)",
+              }}
+            >
+              {initials}
+            </div>
+
+            {/* Info */}
+            <div
+              style={{
+                flex: 1,
+                minWidth: 0,
+              }}
+            >
               <div
-                key={m.id}
-                className="flex items-center gap-4 px-5 py-4"
-                style={{ borderBottom: index < members.length - 1 ? "1px solid var(--c-border)" : "none" }}
+                className="flex items-center"
+                style={{
+                  gap: "10px",
+                  marginBottom: "6px",
+                  flexWrap: "wrap",
+                }}
               >
-                {/* Rank */}
-                <span className="text-xs font-mono w-5 text-center" style={{ color: "var(--c-faint)" }}>
-                  {index + 1}
-                </span>
-
-                {/* Avatar */}
-                <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold shrink-0"
+                <span
                   style={{
-                    background: "var(--c-accent-bg)",
-                    color: "var(--c-accent)",
-                    border: "1px solid var(--c-accent-bd)",
+                    color: "var(--c-text)",
+                    fontSize: "15px",
+                    fontWeight: 600,
+                    lineHeight: 1.3,
                   }}
                 >
-                  {initials}
-                </div>
+                  {profile.full_name}
+                </span>
 
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium truncate" style={{ color: "var(--c-text)" }}>
-                      {profile.full_name}
+                {m.user_id === user.id && (
+                  <span
+                    style={{
+                      background: "var(--c-accent-bg)",
+                      color: "var(--c-accent)",
+                      border: "1px solid var(--c-accent-bd)",
+                      borderRadius: "999px",
+                      fontSize: "10px",
+                      fontWeight: 700,
+                      padding: "3px 8px",
+                      letterSpacing: ".04em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    Anda
+                  </span>
+                )}
+              </div>
+
+              <p
+                style={{
+                  color: "var(--c-muted)",
+                  fontSize: "12px",
+                  margin: 0,
+                }}
+              >
+                {m.role_in_project ?? profile.role ?? "Anggota"}
+
+                {profile.available_hours && (
+                  <span style={{ color: "var(--c-faint)" }}>
+                    {" "}
+                    · {profile.available_hours}h/minggu
+                  </span>
+                )}
+              </p>
+
+              {profile.skills && profile.skills.length > 0 && (
+                <div
+                  className="flex flex-wrap"
+                  style={{
+                    gap: "8px",
+                    marginTop: "12px",
+                  }}
+                >
+                  {profile.skills.slice(0, 4).map((s) => (
+                    <span
+                      key={s}
+                      style={{
+                        background: "var(--c-raised)",
+                        color: "var(--c-muted)",
+                        border: "1px solid var(--c-border)",
+                        borderRadius: "999px",
+                        padding: "5px 10px",
+                        fontSize: "11px",
+                        lineHeight: 1,
+                      }}
+                    >
+                      {s}
                     </span>
-                    {m.user_id === user.id && (
-                      <span
-                        className="text-[9px] px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider"
-                        style={{ background: "var(--c-accent-bg)", color: "var(--c-accent)", border: "1px solid var(--c-accent-bd)" }}
-                      >
-                        Anda
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs mt-0.5" style={{ color: "var(--c-muted)" }}>
-                    {m.role_in_project ?? profile.role ?? "Anggota"}
-                    {profile.available_hours && (
-                      <span style={{ color: "var(--c-faint)" }}> · {profile.available_hours}h/minggu</span>
-                    )}
-                  </p>
-                  {profile.skills && profile.skills.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-1.5">
-                      {profile.skills.slice(0, 4).map((s) => (
-                        <span
-                          key={s}
-                          className="text-[9px] px-1.5 py-0.5 rounded"
-                          style={{ background: "var(--c-raised)", color: "var(--c-muted)", border: "1px solid var(--c-border)" }}
-                        >
-                          {s}
-                        </span>
-                      ))}
-                      {profile.skills.length > 4 && (
-                        <span className="text-[9px]" style={{ color: "var(--c-faint)" }}>
-                          +{profile.skills.length - 4}
-                        </span>
-                      )}
-                    </div>
+                  ))}
+
+                  {profile.skills.length > 4 && (
+                    <span
+                      style={{
+                        fontSize: "11px",
+                        color: "var(--c-faint)",
+                        alignSelf: "center",
+                      }}
+                    >
+                      +{profile.skills.length - 4}
+                    </span>
                   )}
                 </div>
+              )}
+            </div>
 
-                {/* XP */}
-                <div className="text-right shrink-0">
-                  <p className="text-sm font-semibold" style={{ color: "var(--c-accent)" }}>
-                    {profile.xp_points ?? 0}
-                  </p>
-                  <p className="text-[10px]" style={{ color: "var(--c-muted)" }}>XP</p>
-                </div>
+            {/* XP */}
+            <div
+              style={{
+                minWidth: "70px",
+                flexShrink: 0,
+                textAlign: "right",
+              }}
+            >
+              <div
+                style={{
+                  color: "var(--c-accent)",
+                  fontWeight: 700,
+                  fontSize: "18px",
+                  lineHeight: 1,
+                  marginBottom: "5px",
+                }}
+              >
+                {profile.xp_points ?? 0}
               </div>
-            );
-          })
-        )}
-      </div>
-    </div>
+
+              <div
+                style={{
+                  color: "var(--c-muted)",
+                  fontSize: "10px",
+                  letterSpacing: ".08em",
+                  textTransform: "uppercase",
+                }}
+              >
+                XP
+              </div>
+            </div>
+          </div>
+        );
+      })
+    )}
+  </div>
+</div>
   );
 }

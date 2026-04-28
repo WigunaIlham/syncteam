@@ -1,23 +1,15 @@
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 import Sidebar from "@/components/layout/Sidebar";
-import type { Project } from "@/types";
 
-export default async function AppLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name")
+    .select("full_name, email")
     .eq("id", user.id)
     .single();
 
@@ -26,37 +18,38 @@ export default async function AppLayout({
     .select("project_id")
     .eq("user_id", user.id);
 
+  const projectIds = (memberIds ?? []).map((r) => r.project_id);
+
   const { data: ownedProjects } = await supabase
     .from("projects")
-    .select("id, name, status, start_date, end_date, owner_id, sprint_count, created_at, description")
-    .eq("owner_id", user.id);
+    .select("id, name")
+    .eq("owner_id", user.id)
+    .eq("status", "active");
+
+  const { data: memberProjects } = projectIds.length > 0
+    ? await supabase
+        .from("projects")
+        .select("id, name")
+        .in("id", projectIds)
+        .eq("status", "active")
+    : { data: [] };
 
   const ownedIds = (ownedProjects ?? []).map((p) => p.id);
-  const memberProjectIds = (memberIds ?? [])
-    .map((r) => r.project_id)
-    .filter((id) => !ownedIds.includes(id));
-
-  const { data: memberProjects } =
-    memberProjectIds.length > 0
-      ? await supabase
-          .from("projects")
-          .select("id, name, status, start_date, end_date, owner_id, sprint_count, created_at, description")
-          .in("id", memberProjectIds)
-      : { data: [] };
-
-  const allProjects: Project[] = [
+  const allProjects = [
     ...(ownedProjects ?? []),
-    ...(memberProjects ?? []),
-  ] as Project[];
+    ...(memberProjects ?? []).filter((p) => !ownedIds.includes(p.id)),
+  ];
 
   return (
-    <div className="h-screen w-screen flex overflow-hidden" style={{ background: "var(--c-bg)" }}>
+    <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
       <Sidebar
         projects={allProjects}
         userName={profile?.full_name ?? user.email ?? "User"}
-        userEmail={user.email}
+        userEmail={profile?.email ?? user.email}
       />
-      <main className="flex-1 overflow-auto">{children}</main>
+      <main style={{ flex: 1, overflowY: "auto", minWidth: 0 }}>
+        {children}
+      </main>
     </div>
   );
 }
