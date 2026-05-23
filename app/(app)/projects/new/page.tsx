@@ -1,4 +1,3 @@
-"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -45,81 +44,202 @@ export default function NewProjectPage() {
   };
 
   return (
-    <div className="p-8 max-w-xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold" style={{ color: "var(--c-text)" }}>
-          Buat Proyek Baru
-        </h1>
-        <p className="text-sm mt-1" style={{ color: "var(--c-muted)" }}>
-          Isi detail proyek — AI akan siap membantu membuat roadmap dan task breakdown.
-        </p>
-      </div>
+   <div
+  style={{
+    maxWidth: "1200px",
+    padding: "40px 32px 56px",
+  }}
+>
+  {/* Header */}
+  <div
+    style={{
+      marginBottom: "34px",
+    }}
+  >
+    <h1
+      style={{
+        margin: 0,
+        fontSize: "30px",
+        fontWeight: 700,
+        lineHeight: 1.15,
+        letterSpacing: "-0.02em",
+        color: "var(--c-text)",
+        marginBottom: "10px",
+      }}
+    >
+      Buat Proyek Baru
+    </h1>
 
-      <form
-        onSubmit={handleSubmit}
-        className="rounded-xl p-6 space-y-5"
-        style={{ background: "var(--c-surface)", border: "1px solid var(--c-border)" }}
+    <p
+      style={{
+        margin: 0,
+        fontSize: "14px",
+        lineHeight: 1.7,
+        color: "var(--c-muted)",
+        maxWidth: "1200px",
+      }}
+    >
+      Isi detail proyek. AI akan membantu membuat roadmap, sprint planning,
+      dan task breakdown secara otomatis.
+    </p>
+  </div>
+
+
+  {/* Form */}
+  <form
+    onSubmit={handleSubmit}
+    style={{
+      background: "var(--c-surface)",
+      border: "1px solid var(--c-border)",
+      borderRadius: "24px",
+      padding: "30px 30px 30px",
+      display: "flex",
+      flexDirection: "column",
+      gap: "10px",
+      boxShadow: "0 4px 20px rgba(0,0,0,.03)",
+    }}
+  >
+    {/* Nama Proyek */}
+<div style={{ marginBottom: "26px" }}>
+  <label
+    style={{
+      display: "block",
+      marginBottom: "10px",
+      fontSize: "12px",
+      fontWeight: 600,
+      color: "var(--c-muted)",
+    }}
+  >
+    Nama Proyek
+  </label>
+
+  <Input
+    placeholder="Contoh: E-Commerce MVP"
+    value={form.name}
+    onChange={set("name")}
+    error={errors.name}
+    required
+  />
+</div>
+
+
+
+    {/* Description */}
+    <div>
+      <label
+        style={{
+          display: "block",
+          marginBottom: "10px",
+          fontSize: "12px",
+          fontWeight: 600,
+          color: "var(--c-muted)",
+        }}
       >
-        <Input
-          label="Nama Proyek"
-          placeholder="Contoh: E-Commerce MVP"
-          value={form.name}
-          onChange={set("name")}
-          error={errors.name}
-          required
-        />
+        Deskripsi
+      </label>
 
-        <div>
-          <label className="block text-xs font-medium mb-1.5" style={{ color: "var(--c-muted)" }}>
-            Deskripsi
-          </label>
-          <textarea
-            placeholder="Deskripsi singkat tujuan dan scope proyek ini..."
-            value={form.description}
-            onChange={set("description")}
-            rows={3}
-            className="w-full rounded-lg px-3 py-2 text-sm resize-none input-field"
-            style={{
-              background: "var(--c-raised)",
-              border: "1px solid var(--c-border)",
-              color: "var(--c-text)",
-            }}
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <Input
-            label="Tanggal Mulai"
-            type="date"
-            value={form.start_date}
-            onChange={set("start_date")}
-            error={errors.start_date}
-            required
-          />
-          <Input
-            label="Tanggal Selesai"
-            type="date"
-            value={form.end_date}
-            onChange={set("end_date")}
-            error={errors.end_date}
-            required
-          />
-        </div>
-
-        <div className="flex gap-3 pt-1">
-          <Button
-            type="button"
-            variant="secondary"
-            className="flex-1"
-            onClick={() => router.back()}
-          >
-            Batal
-          </Button>
-          <Button type="submit" loading={isSaving} className="flex-1">
-            Buat Proyek
-          </Button>
-        </div>
-      </form>
+      <textarea
+        placeholder="Deskripsi singkat tujuan dan scope proyek ini..."
+        value={form.description}
+        onChange={set("description")}
+        rows={4}
+        className="input-field"
+        style={{
+          width: "100%",
+          resize: "none",
+          padding: "14px 12px",
+          borderRadius: "14px",
+          background: "var(--c-raised)",
+          border: "1px solid var(--c-border)",
+          color: "var(--c-text)",
+          fontSize: "14px",
+          lineHeight: 1.6,
+        }}
+      />
     </div>
+
+{/* Tanggal */}
+<div
+  className="grid grid-cols-2"
+  style={{
+    gap: "24px",
+    marginBottom: "26px",
+  }}
+>
+  <div>
+    <label
+      style={{
+        display: "block",
+        marginBottom: "10px",
+        fontSize: "12px",
+        fontWeight: 600,
+        color: "var(--c-muted)",
+      }}
+    >
+      Tanggal Mulai
+    </label>
+
+    <Input
+      type="date"
+      value={form.start_date}
+      onChange={set("start_date")}
+      error={errors.start_date}
+      required
+    />
+  </div>
+
+  <div>
+    <label
+      style={{
+        display: "block",
+        marginBottom: "10px",
+        fontSize: "12px",
+        fontWeight: 600,
+        color: "var(--c-muted)",
+      }}
+    >
+      Tanggal Selesai
+    </label>
+
+    <Input
+      type="date"
+      value={form.end_date}
+      onChange={set("end_date")}
+      error={errors.end_date}
+      required
+    />
+  </div>
+</div>
+
+    {/* Actions */}
+<div
+  className="flex"
+  style={{
+    gap: "12px",
+    paddingTop: "8px",
+    marginTop: "4px",
+  }}
+>
+  <Button
+    type="button"
+    variant="secondary"
+    onClick={() => router.back()}
+    className="flex-1 px-6 rounded-xl"
+    style={{ height: "48px", fontSize: "14px" }}
+  >
+    Batal
+  </Button>
+
+  <Button
+    type="submit"
+    loading={isSaving}
+    className="flex-1 px-6 rounded-xl"
+    style={{ height: "48px", fontSize: "14px" }}
+  >
+    Buat Proyek
+  </Button>
+</div>
+  </form>
+</div>
   );
 }

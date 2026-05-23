@@ -26,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var t=localStorage.getItem('st-theme')||'obsidian';document.documentElement.setAttribute('data-theme',t);}catch(e){}`,
+            __html: `(function(){try{var t=localStorage.getItem('st-theme')||'obsidian';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`,
           }}
         />
       </head>

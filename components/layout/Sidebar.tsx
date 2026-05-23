@@ -47,11 +47,110 @@ const NAV_ITEMS = [
   },
 ];
 
+function NavItem({ item, active }: { item: (typeof NAV_ITEMS)[0]; active: boolean }) {
+  const [hovered, setHovered] = useState(false);
+  const lit = active || hovered;
+
+  return (
+    <Link
+      href={item.href}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "9px",
+        padding: "7px 10px",
+        borderRadius: "8px",
+        fontSize: "13px",
+        fontWeight: active ? 600 : 400,
+        textDecoration: "none",
+        position: "relative",
+        background: lit ? "var(--c-raised)" : "transparent",
+        color: lit ? "var(--c-text)" : "var(--c-muted)",
+        transition: "background 0.12s, color 0.12s",
+      }}
+    >
+      {active && (
+        <span
+          style={{
+            position: "absolute",
+            left: 0,
+            top: "20%",
+            bottom: "20%",
+            width: "2px",
+            borderRadius: "0 2px 2px 0",
+            background: "var(--c-accent)",
+          }}
+        />
+      )}
+      <span
+        style={{
+          width: "15px",
+          height: "15px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+          opacity: active ? 1 : 0.6,
+          color: active ? "var(--c-accent)" : "currentColor",
+        }}
+      >
+        {item.icon}
+      </span>
+      {item.label}
+    </Link>
+  );
+}
+
+function ProjectItem({ project, active }: { project: Project; active: boolean }) {
+  const [hovered, setHovered] = useState(false);
+  const lit = active || hovered;
+
+  return (
+    <Link
+      href={`/projects/${project.id}/board`}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        padding: "6px 10px",
+        borderRadius: "7px",
+        fontSize: "12px",
+        fontWeight: active ? 500 : 400,
+        textDecoration: "none",
+        background: lit ? "var(--c-raised)" : "transparent",
+        color: lit ? "var(--c-text)" : "var(--c-muted)",
+        transition: "background 0.12s, color 0.12s",
+        overflow: "hidden",
+      }}
+    >
+      <span
+        style={{
+          width: "6px",
+          height: "6px",
+          borderRadius: "50%",
+          flexShrink: 0,
+          background: active ? "var(--c-accent)" : "var(--c-faint)",
+          transition: "background 0.12s",
+        }}
+      />
+      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        # {project.name}
+      </span>
+    </Link>
+  );
+}
+
 export default function Sidebar({ projects, userName, userEmail }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isCreating, setIsCreating] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
+  const [newProjectHovered, setNewProjectHovered] = useState(false);
+  const [logoutHovered, setLogoutHovered] = useState(false);
 
   const handleLogout = async () => {
     const supabase = createClient();
@@ -75,115 +174,106 @@ export default function Sidebar({ projects, userName, userEmail }: SidebarProps)
 
   return (
     <div
-      className="w-60 flex flex-col h-full"
       style={{
+        width: "220px",
+        minWidth: "220px",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
         background: "var(--c-surface)",
         borderRight: "1px solid var(--c-border)",
       }}
     >
-      {/* Logo */}
-      <div className="px-5 pt-5 pb-4" style={{ borderBottom: "1px solid var(--c-border)" }}>
-        <div className="flex items-center gap-2.5">
-          <div
-            className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-sm font-bold"
-            style={{
-              background: "var(--c-accent-bg)",
-              border: "1px solid var(--c-accent-bd)",
-              color: "var(--c-accent)",
-            }}
-          >
-            S
-          </div>
-          <span className="font-bold text-sm" style={{ color: "var(--c-accent)" }}>
-            SyncTeam
-          </span>
+      {/* ── Logo ── */}
+      <div
+        style={{
+          padding: "16px 16px 14px",
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          borderBottom: "1px solid var(--c-border)",
+        }}
+      >
+        <div
+          style={{
+            width: "32px",
+            height: "32px",
+            borderRadius: "8px",
+            flexShrink: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "var(--c-accent-bg)",
+            border: "1px solid var(--c-accent-bd)",
+            color: "var(--c-accent)",
+            fontFamily: "Georgia, 'Times New Roman', serif",
+            fontSize: "17px",
+            fontWeight: 700,
+          }}
+        >
+          S
         </div>
+        <span
+          style={{
+            color: "var(--c-accent)",
+            fontFamily: "Georgia, 'Times New Roman', serif",
+            fontSize: "15px",
+            fontWeight: 700,
+            letterSpacing: "0.01em",
+          }}
+        >
+          SyncTeam
+        </span>
       </div>
 
-      {/* Nav */}
-      <nav className="px-3 py-3 space-y-0.5">
-        {NAV_ITEMS.map((item) => {
-          const active = pathname === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all"
-              style={{
-                background: active ? "var(--c-raised)" : "transparent",
-                color: active ? "var(--c-text)" : "var(--c-muted)",
-                fontWeight: active ? "600" : "400",
-              }}
-              onMouseEnter={(e) => {
-                if (!active) {
-                  (e.currentTarget as HTMLElement).style.color = "var(--c-text)";
-                  (e.currentTarget as HTMLElement).style.background = "var(--c-raised)";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!active) {
-                  (e.currentTarget as HTMLElement).style.color = "var(--c-muted)";
-                  (e.currentTarget as HTMLElement).style.background = "transparent";
-                }
-              }}
-            >
-              <span style={{ color: active ? "var(--c-accent)" : "currentColor" }}>
-                {item.icon}
-              </span>
-              {item.label}
-            </Link>
-          );
-        })}
+      {/* ── Nav ── */}
+      <nav
+        style={{
+          padding: "8px 10px 4px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "2px",
+        }}
+      >
+        {NAV_ITEMS.map((item) => (
+          <NavItem key={item.href} item={item} active={pathname === item.href} />
+        ))}
       </nav>
 
-      {/* Projects section */}
-      <div className="px-3 flex-1 overflow-y-auto" style={{ borderTop: "1px solid var(--c-border)", paddingTop: "12px" }}>
+      {/* ── Divider ── */}
+      <div style={{ height: "1px", background: "var(--c-border)", margin: "4px 0" }} />
+
+      {/* ── Projects ── */}
+      <div style={{ padding: "0 10px", flex: 1, overflowY: "auto" }}>
         <p
-          className="text-[10px] uppercase tracking-widest font-bold px-3 mb-2"
-          style={{ color: "var(--c-faint)" }}
+          style={{
+            fontSize: "10px",
+            fontWeight: 700,
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            color: "var(--c-faint)",
+            padding: "10px 10px 6px",
+          }}
         >
           Proyek
         </p>
 
-        <div className="space-y-0.5">
-          {projects.map((p) => {
-            const active = pathname.startsWith(`/projects/${p.id}`);
-            return (
-              <Link
-                key={p.id}
-                href={`/projects/${p.id}/board`}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs transition-all truncate"
-                style={{
-                  background: active ? "var(--c-raised)" : "transparent",
-                  color: active ? "var(--c-text)" : "var(--c-muted)",
-                  fontWeight: active ? "600" : "400",
-                }}
-                onMouseEnter={(e) => {
-                  if (!active) {
-                    (e.currentTarget as HTMLElement).style.color = "var(--c-text)";
-                    (e.currentTarget as HTMLElement).style.background = "var(--c-raised)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!active) {
-                    (e.currentTarget as HTMLElement).style.color = "var(--c-muted)";
-                    (e.currentTarget as HTMLElement).style.background = "transparent";
-                  }
-                }}
-              >
-                <span
-                  className="w-1.5 h-1.5 rounded-full shrink-0"
-                  style={{ background: active ? "var(--c-accent)" : "var(--c-faint)" }}
-                />
-                <span className="truncate"># {p.name}</span>
-              </Link>
-            );
-          })}
+        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+          {projects.map((p) => (
+            <ProjectItem
+              key={p.id}
+              project={p}
+              active={pathname.startsWith(`/projects/${p.id}`)}
+            />
+          ))}
         </div>
+
+        {/* Divider */}
+        <div style={{ height: "1px", background: "var(--c-border)", margin: "6px 4px" }} />
 
         {/* Quick create */}
         {isCreating ? (
-          <div className="mt-2 px-1">
+          <div style={{ padding: "0 4px", marginTop: "4px" }}>
             <input
               autoFocus
               value={newProjectName}
@@ -193,84 +283,155 @@ export default function Sidebar({ projects, userName, userEmail }: SidebarProps)
                 if (e.key === "Escape") setIsCreating(false);
               }}
               placeholder="Nama proyek..."
-              className="w-full text-xs px-3 py-1.5 rounded-lg outline-none"
               style={{
+                width: "100%",
+                fontSize: "12px",
+                padding: "6px 10px",
+                borderRadius: "7px",
+                outline: "none",
                 background: "var(--c-raised)",
                 border: "1px solid var(--c-accent)",
                 color: "var(--c-text)",
               }}
             />
-            <p className="text-[10px] mt-1 px-1" style={{ color: "var(--c-muted)" }}>
+            <p
+              style={{
+                fontSize: "10px",
+                marginTop: "4px",
+                paddingLeft: "4px",
+                color: "var(--c-muted)",
+              }}
+            >
               Enter untuk buat · Esc untuk batal
             </p>
           </div>
         ) : (
           <button
             onClick={() => setIsCreating(true)}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs transition-all w-full mt-1"
-            style={{ color: "var(--c-muted)" }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.color = "var(--c-accent)";
-              (e.currentTarget as HTMLElement).style.background = "var(--c-accent-bg)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.color = "var(--c-muted)";
-              (e.currentTarget as HTMLElement).style.background = "transparent";
+            onMouseEnter={() => setNewProjectHovered(true)}
+            onMouseLeave={() => setNewProjectHovered(false)}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "6px 10px",
+              borderRadius: "7px",
+              fontSize: "12px",
+              cursor: "pointer",
+              width: "100%",
+              background: newProjectHovered ? "var(--c-accent-bg)" : "transparent",
+              border: "none",
+              color: newProjectHovered ? "var(--c-accent)" : "var(--c-muted)",
+              marginTop: "2px",
+              transition: "color 0.12s, background 0.12s",
             }}
           >
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M6 1v10M1 6h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              <path
+                d="M6 1v10M1 6h10"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
             </svg>
             Buat proyek baru
           </button>
         )}
       </div>
 
-      {/* Footer: user + theme */}
+      {/* ── Footer ── */}
       <div
-        className="px-4 py-3 shrink-0 flex items-center justify-between gap-2"
-        style={{ borderTop: "1px solid var(--c-border)" }}
+        style={{
+          padding: "10px 12px",
+          borderTop: "1px solid var(--c-border)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "8px",
+          flexShrink: 0,
+        }}
       >
-        <div className="flex items-center gap-2 min-w-0">
+        {/* User info */}
+        <div style={{ display: "flex", alignItems: "center", gap: "9px", minWidth: 0 }}>
           <div
-            className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs font-bold"
             style={{
+              width: "28px",
+              height: "28px",
+              borderRadius: "50%",
+              flexShrink: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               background: "var(--c-accent-bg)",
-              color: "var(--c-accent)",
               border: "1px solid var(--c-accent-bd)",
+              color: "var(--c-accent)",
+              fontSize: "11px",
+              fontWeight: 700,
             }}
           >
             {initials}
           </div>
-          <div className="min-w-0">
-            <p className="text-xs font-semibold truncate" style={{ color: "var(--c-text)" }}>
+          <div style={{ minWidth: 0 }}>
+            <p
+              style={{
+                fontSize: "12px",
+                fontWeight: 600,
+                color: "var(--c-text)",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                margin: 0,
+              }}
+            >
               {userName}
             </p>
             {userEmail && (
-              <p className="text-[10px] truncate" style={{ color: "var(--c-muted)" }}>
+              <p
+                style={{
+                  fontSize: "10px",
+                  color: "var(--c-muted)",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  margin: 0,
+                }}
+              >
                 {userEmail}
               </p>
             )}
           </div>
         </div>
-        <div className="flex items-center gap-1.5">
+
+        {/* Actions */}
+        <div style={{ display: "flex", alignItems: "center", gap: "4px", flexShrink: 0 }}>
           <ThemeToggle />
           <button
             onClick={handleLogout}
+            onMouseEnter={() => setLogoutHovered(true)}
+            onMouseLeave={() => setLogoutHovered(false)}
             title="Keluar"
-            className="w-7 h-7 rounded-lg flex items-center justify-center transition-all"
-            style={{ color: "var(--c-muted)" }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.color = "var(--c-danger)";
-              (e.currentTarget as HTMLElement).style.background = "var(--c-red-bg)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.color = "var(--c-muted)";
-              (e.currentTarget as HTMLElement).style.background = "transparent";
+            style={{
+              width: "27px",
+              height: "27px",
+              borderRadius: "7px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: logoutHovered ? "var(--c-red-bg)" : "transparent",
+              border: "none",
+              color: logoutHovered ? "var(--c-red)" : "var(--c-muted)",
+              cursor: "pointer",
+              transition: "color 0.12s, background 0.12s",
             }}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M5 2H2a1 1 0 00-1 1v8a1 1 0 001 1h3M9 10l3-3-3-3M12 7H5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+              <path
+                d="M5 2H2a1 1 0 00-1 1v8a1 1 0 001 1h3M9 10l3-3-3-3M12 7H5"
+                stroke="currentColor"
+                strokeWidth="1.3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </button>
         </div>
